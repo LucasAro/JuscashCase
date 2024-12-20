@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "", general: "" });
   const [isLoading, setIsLoading] = useState(false); // Estado para controle do feedback de "Aguarde..."
-
+  const apiUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
@@ -32,9 +32,8 @@ const Login = () => {
       setIsLoading(false); // Desativar o estado de carregamento
       return;
     }
-
     try {
-      const response = await fetch("http://localhost:3000/usuarios/login", {
+      const response = await fetch(`${apiUrl}/usuarios/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha: password }),
@@ -85,7 +84,7 @@ const Login = () => {
 
           <div className="mb-6 relative">
             <label htmlFor="password" className="block text-blue-950 font-semibold text-lg">
-              Senha:
+              Senhas:
             </label>
             <input
               type={showPassword ? "text" : "password"}

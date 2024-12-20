@@ -14,6 +14,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // Controle de visibilidade de senha
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Controle de visibilidade de confirmação
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -44,7 +45,7 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/usuarios/register", {
+      const response = await fetch(`${apiUrl}/usuarios/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -6,6 +6,7 @@ import Logo from "../assets/logo.svg";
 const HeaderBar = () => {
   const [isLoading, setIsLoading] = useState(false); // Estado para o feedback de loading
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleLogout = async () => {
     const token = localStorage.getItem("token"); // Recupera o token do localStorage
@@ -19,7 +20,7 @@ const HeaderBar = () => {
 
     try {
       // Chama a rota de logout
-      const response = await fetch("http://localhost:3000/usuarios/logout", {
+      const response = await fetch(`${apiUrl}/usuarios/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

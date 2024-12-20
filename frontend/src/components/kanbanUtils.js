@@ -17,10 +17,12 @@ export const timeFromNow = ( date ) =>
 export const updateStatus = async ( id, newStatus ) =>
 {
 	const token = localStorage.getItem( "token" );
+	const apiUrl = process.env.REACT_APP_API_URL;
+
 	try
 	{
 		const response = await fetch(
-			`http://localhost:3000/publicacoes/${id}/status`,
+			`${apiUrl}/publicacoes/${id}/status`,
 			{
 				method: "PUT",
 				headers: {
@@ -73,7 +75,6 @@ export const fetchData = async (
 	setIsLoading
 ) =>
 {
-	console.log( "fetchData foi chamada." );
 	// if ( setIsLoading )
 	// {
 	// 	console.warn( "Já está carregando dados. Ignorando nova chamada." );
@@ -82,12 +83,12 @@ export const fetchData = async (
 	setIsLoading( true );
 
 	const token = localStorage.getItem( "token" );
-	console.log( "Token recuperado:", token );
+	const apiUrl = process.env.REACT_APP_API_URL;
 
 	try
 	{
 		const response = await fetch(
-			`http://localhost:3000/publicacoes/status?offset=${offset}&limit=${limit}`,
+			`${apiUrl}/publicacoes/status?offset=${offset}&limit=${limit}`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,

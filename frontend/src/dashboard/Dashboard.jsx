@@ -5,6 +5,7 @@ import HeaderBar from "../components/HeaderBar"; // Importe o componente HeaderB
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const validateToken = async () => {
@@ -16,7 +17,7 @@ const Dashboard = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:3000/usuarios/validate", {
+        const response = await fetch(`${apiUrl}/usuarios/validate`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
