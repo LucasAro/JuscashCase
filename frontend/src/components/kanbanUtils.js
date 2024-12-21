@@ -64,7 +64,6 @@ export const isValidMove = ( source, destination ) =>
 	return true;
 };
 
-
 export const fetchData = async (
 	offset,
 	limit,
@@ -72,14 +71,18 @@ export const fetchData = async (
 	setColumns,
 	setHasMore,
 	setOffset,
-	setIsLoading
+	setIsLoading,
+	hasMore
 ) =>
 {
-	// if ( setIsLoading )
-	// {
-	// 	console.warn( "Já está carregando dados. Ignorando nova chamada." );
-	// 	return;
-	// }
+	// Verifica se ainda há dados para carregar
+	if ( !Object.values( hasMore ).some( ( value ) => value ) )
+	{
+		console.warn( "Sem mais dados para carregar. Ignorando requisição." );
+		setIsLoading( false );
+		return;
+	}
+
 	setIsLoading( true );
 
 	const token = localStorage.getItem( "token" );
@@ -96,8 +99,6 @@ export const fetchData = async (
 			}
 		);
 
-		console.log( "Resposta da API recebida:", response );
-
 		if ( !response.ok )
 		{
 			console.error( "Erro na requisição:", response.status, response.statusText );
@@ -105,14 +106,8 @@ export const fetchData = async (
 		}
 
 		const data = await response.json();
-		console.log( "Dados recebidos da API:", data );
 
-		if ( !data.nova || !data.lida || !data.processada || !data.concluida )
-		{
-			console.error( "Resposta da API está incompleta ou formatada incorretamente:", data );
-			return;
-		}
-
+		// Atualiza colunas e verifica se há mais dados a serem carregados
 		const newColumns = {
 			nova: [...columns.nova, ...data.nova.publicacoes],
 			lida: [...columns.lida, ...data.lida.publicacoes],
@@ -120,24 +115,12 @@ export const fetchData = async (
 			concluída: [...columns.concluída, ...data.concluida.publicacoes],
 		};
 
-		const newTotals = {
-			nova: data.nova.total,
-			lida: data.lida.total,
-			processada: data.processada.total,
-			concluída: data.concluida.total,
-		};
-
-		console.log( "Novas colunas:", newColumns );
-		console.log( "Novos totais:", newTotals );
-
 		const newHasMore = {
-			nova: newColumns.nova.length < newTotals.nova,
-			lida: newColumns.lida.length < newTotals.lida,
-			processada: newColumns.processada.length < newTotals.processada,
-			concluída: newColumns.concluída.length < newTotals.concluída,
+			nova: newColumns.nova.length < data.nova.total,
+			lida: newColumns.lida.length < data.lida.total,
+			processada: newColumns.processada.length < data.processada.total,
+			concluída: newColumns.concluída.length < data.concluida.total,
 		};
-
-		console.log( "Novos valores de hasMore:", newHasMore );
 
 		setColumns( newColumns );
 		setHasMore( newHasMore );
