@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Kanban from "../components/Kanban";
 import HeaderBar from "../components/HeaderBar"; // Importe o componente HeaderBar
+import SearchBar from "../components/SearchBar";
+import Kanban from "../components/Kanban";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -41,12 +42,17 @@ const Dashboard = () => {
   }, [navigate]);
 
   return (
-    <div>
-      <HeaderBar /> {/* Inclua o HeaderBar aqui */}
-      <h1 className="text-3xl font-bold text-blue-800 text-center my-8">📚 Publicações</h1>
-      <Kanban />
+    <div className="flex flex-col h-screen">
+      <HeaderBar />
+      <div className="flex-grow overflow-x-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+        <SearchBar />
+        <Kanban />
+      </div>
     </div>
   );
+
+
+
 };
 
 export default Dashboard;

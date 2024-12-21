@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Logo from "./assets/logo.svg";
@@ -11,6 +11,44 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false); // Estado para controle do feedback de "Aguarde..."
   const apiUrl = process.env.REACT_APP_API_URL;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAndValidateToken = async () => {
+      const token = localStorage.getItem("token");
+
+      // Se o token não existe
+      if (!token) {
+        console.warn("Token não encontrado.");
+        return;
+      }
+
+      try {
+        // Faz a validação do token
+        const response = await fetch(`${apiUrl}/usuarios/validate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: "",
+        });
+
+        if (response.ok) {
+          // Token válido, redireciona para o dashboard
+          navigate("/dashboard");
+        } else {
+          // Token inválido, remove e fica na página atual ou redireciona
+          console.warn("Token inválido.");
+          localStorage.removeItem("token");
+        }
+      } catch (error) {
+        console.error("Erro ao validar o token:", error);
+        localStorage.removeItem("token");
+      }
+    };
+
+    checkAndValidateToken();
+  }, [navigate, apiUrl]);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
