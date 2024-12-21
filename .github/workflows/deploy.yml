@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@ec2-3-138-60-127.us-east-2.compute.amazonaws.com << 'EOF'
+          ssh -o StrictHostKeyChecking=no  ubuntu@ec2-3-135-200-72.us-east-2.compute.amazonaws.com << 'EOF'
           cd ~
           git clone git@github.com:LucasAro/JuscashCase.git projeto || (cd projeto && git pull)
           cd projeto
