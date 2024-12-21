@@ -8,34 +8,87 @@ const router = express.Router();
 // Buscar publicações com filtros (rota protegida)
 router.get( '/', autenticarToken, async ( req, res ) =>
 {
-	const { processo, data, status, envolvido } = req.query;
+	const { search, dataInicio, dataFim, offset = 0, limit = 30 } = req.query;
 
-	const where = {};
+	const baseWhere = {};
 
-	if ( processo ) where.processo = processo;
-	if ( data ) where.data_disponibilizacao = data;
-	if ( status ) where.status = status;
-
-	if ( envolvido )
+	// Filtro por "search" (número do processo ou nomes de envolvidos)
+	if ( search )
 	{
-		where[Op.or] = [
-			{ autores: { [Op.iLike]: `%${envolvido}%` } },
-			{ advogados: { [Op.iLike]: `%${envolvido}%` } },
-			{ reu: { [Op.iLike]: `%${envolvido}%` } },
+		baseWhere[Op.or] = [
+			{ processo: { [Op.iLike]: `%${search}%` } },
+			{ autores: { [Op.iLike]: `%${search}%` } },
+			{ advogados: { [Op.iLike]: `%${search}%` } },
+			{ reu: { [Op.iLike]: `%${search}%` } },
 		];
+	}
+
+	// Filtros de data para o campo DATE
+	if ( dataInicio && dataFim )
+	{
+		baseWhere.data_disponibilizacao = {
+			[Op.between]: [dataInicio, dataFim], // Comparação direta com strings no formato 'YYYY-MM-DD'
+		};
+	} else if ( dataInicio )
+	{
+		baseWhere.data_disponibilizacao = {
+			[Op.gte]: dataInicio, // Maior ou igual à data inicial
+		};
+	} else if ( dataFim )
+	{
+		baseWhere.data_disponibilizacao = {
+			[Op.lte]: dataFim, // Menor ou igual à data final
+		};
 	}
 
 	try
 	{
-		const publicacoes = await Publicacao.findAll( { where } );
-		res.json( publicacoes );
+		// Função para buscar publicações por status
+		const fetchByStatus = async ( status ) =>
+		{
+			const where = { ...baseWhere, status };
+			const publicacoes = await Publicacao.findAll( {
+				where,
+				offset: parseInt( offset, 10 ),
+				limit: parseInt( limit, 10 ),
+			} );
+			const total = await Publicacao.count( { where } );
+			return { total, publicacoes };
+		};
+
+		// Buscar publicações separadamente para cada status
+		const nova = await fetchByStatus( 'nova' );
+		const lida = await fetchByStatus( 'lida' );
+		const processada = await fetchByStatus( 'processada' );
+		const concluida = await fetchByStatus( 'concluída' );
+
+		// Organizar a resposta
+		const resposta = {
+			nova: {
+				total: nova.total,
+				publicacoes: nova.publicacoes,
+			},
+			lida: {
+				total: lida.total,
+				publicacoes: lida.publicacoes,
+			},
+			processada: {
+				total: processada.total,
+				publicacoes: processada.publicacoes,
+			},
+			concluida: {
+				total: concluida.total,
+				publicacoes: concluida.publicacoes,
+			},
+		};
+
+		res.json( resposta );
 	} catch ( error )
 	{
 		console.error( 'Erro ao buscar publicações:', error );
 		res.status( 500 ).json( { error: 'Erro ao buscar publicações' } );
 	}
 } );
-
 
 router.get( '/status', autenticarToken, async ( req, res ) =>
 {

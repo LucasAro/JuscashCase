@@ -73,31 +73,37 @@ export const fetchData = async (
 	setOffset,
 	setIsLoading,
 	hasMore,
-	setHasFetchedData
+	setHasFetchedData,
+	filters = {},
+	reset = false // Novo parâmetro para redefinir as colunas
 ) =>
 {
-	if ( !Object.values( hasMore ).some( ( value ) => value ) )
-	{
-		console.warn( "Sem mais dados para carregar. Ignorando requisição." );
-		setIsLoading( false );
-		return;
-	}
+	// if (!Object.values(hasMore).some((value) => value)) {
+	//   console.warn("Sem mais dados para carregar. Ignorando requisição.");
+	//   setIsLoading(false);
+	//   return;
+	// }
 
 	setIsLoading( true );
 
 	const token = localStorage.getItem( "token" );
 	const apiUrl = process.env.REACT_APP_API_URL;
 
+	const queryParams = new URLSearchParams( {
+		offset,
+		limit,
+		...( filters.searchQuery && { search: filters.searchQuery } ),
+		...( filters.startDate && { dataInicio: filters.startDate } ),
+		...( filters.endDate && { dataFim: filters.endDate } ),
+	} );
+
 	try
 	{
-		const response = await fetch(
-			`${apiUrl}/publicacoes/status?offset=${offset}&limit=${limit}`,
-			{
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}
-		);
+		const response = await fetch( `${apiUrl}/publicacoes?${queryParams.toString()}`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		} );
 
 		if ( !response.ok )
 		{
@@ -113,19 +119,18 @@ export const fetchData = async (
 			!data.processada.publicacoes.length &&
 			!data.concluida.publicacoes.length;
 
-		if ( isEmptyResponse )
-		{
-			console.warn( "Nenhuma publicação retornada. Interrompendo novas requisições." );
-			setHasFetchedData( false );
-			setIsLoading( false );
-			return;
-		}
+		//   if (isEmptyResponse) {
+		// 	console.warn("Nenhuma publicação retornada. Interrompendo novas requisições.");
+		// 	setHasFetchedData(false);
+		// 	setIsLoading(false);
+		// 	return;
+		//   }
 
 		const newColumns = {
-			nova: [...columns.nova, ...data.nova.publicacoes],
-			lida: [...columns.lida, ...data.lida.publicacoes],
-			processada: [...columns.processada, ...data.processada.publicacoes],
-			concluída: [...columns.concluída, ...data.concluida.publicacoes],
+			nova: reset ? data.nova.publicacoes : [...columns.nova, ...data.nova.publicacoes],
+			lida: reset ? data.lida.publicacoes : [...columns.lida, ...data.lida.publicacoes],
+			processada: reset ? data.processada.publicacoes : [...columns.processada, ...data.processada.publicacoes],
+			concluída: reset ? data.concluida.publicacoes : [...columns.concluída, ...data.concluida.publicacoes],
 		};
 
 		const newHasMore = {
@@ -137,8 +142,8 @@ export const fetchData = async (
 
 		setColumns( newColumns );
 		setHasMore( newHasMore );
-		setOffset( ( prevOffset ) => prevOffset + limit );
-		setHasFetchedData( true ); // Mantém ativo caso haja dados
+		setOffset( ( prevOffset ) => ( reset ? limit : prevOffset + limit ) ); // Reinicia o offset se for um reset
+		setHasFetchedData( true );
 	} catch ( error )
 	{
 		console.error( "Erro ao buscar dados:", error );

@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderBar from "../components/HeaderBar"; // Importe o componente HeaderBar
-import SearchBar from "../components/SearchBar";
 import Kanban from "../components/Kanban";
 
 const Dashboard = () => {
@@ -45,7 +44,6 @@ const Dashboard = () => {
     <div className="flex flex-col h-screen">
       <HeaderBar />
       <div className="flex-grow overflow-x-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-        <SearchBar />
         <Kanban />
       </div>
     </div>

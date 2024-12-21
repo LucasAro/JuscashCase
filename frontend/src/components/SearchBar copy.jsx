@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FaSearch, FaBalanceScale } from "react-icons/fa";
 
 const SearchBar = ({ onSearch }) => {
@@ -6,21 +6,13 @@ const SearchBar = ({ onSearch }) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const triggerSearch = () => {
+  const handleSearch = () => {
     onSearch({
       searchQuery,
       startDate,
       endDate,
     });
   };
-
-  useEffect(() => {
-    // Timeout para debounce
-    const debounceTimeout = setTimeout(triggerSearch, 500);
-
-    // Cleanup para evitar múltiplas execuções
-    return () => clearTimeout(debounceTimeout);
-  }, [searchQuery, startDate, endDate]); // Somente quando esses valores mudam
 
   return (
     <div className="bg-white shadow-sm border-b border-gray-200 py-3">
@@ -51,14 +43,12 @@ const SearchBar = ({ onSearch }) => {
                   Data do diário
                 </label>
                 <div className="flex items-center space-x-2 w-full">
-                  {/* <span className="text-sm text-gray-500">De</span> */}
                   <input
                     type="date"
                     className="flex-grow px-4 py-2 border border-gray-300 rounded-md text-sm"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                   />
-                  {/* <span className="text-sm text-gray-500">Até</span> */}
                   <input
                     type="date"
                     className="flex-grow px-4 py-2 border border-gray-300 rounded-md text-sm"
@@ -66,10 +56,10 @@ const SearchBar = ({ onSearch }) => {
                     onChange={(e) => setEndDate(e.target.value)}
                   />
                   <button
-                    onClick={triggerSearch} // Chama a busca diretamente
+                    onClick={handleSearch}
                     className="px-3 py-2 bg-green-500 text-white rounded-md flex items-center justify-center"
                   >
-                    <FaSearch size={20} />
+                    <FaSearch size={16} />
                   </button>
                 </div>
               </div>

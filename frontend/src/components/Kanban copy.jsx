@@ -29,37 +29,39 @@ const Kanban = () => {
   const loaderRef = useRef(null);
 
   const loadColumnsData = async (reset = false, filtersOverride = null) => {
-    if (!hasFetchedData) {
-      console.warn("Requisição bloqueada: Nenhuma publicação encontrada anteriormente.");
-      return;
-    }
+  if (!hasFetchedData) {
+    console.warn("Requisição bloqueada: Nenhuma publicação encontrada anteriormente.");
+    return;
+  }
 
-    if (reset) {
-      setColumns({ nova: [], lida: [], processada: [], concluída: [] });
-      setOffset(0);
-    }
+  if (reset) {
+    setColumns({ nova: [], lida: [], processada: [], concluída: [] });
+    setOffset(0);
+  }
 
-    await fetchData(
-      reset ? 0 : offset,
-      limit,
-      columns,
-      setColumns,
-      setHasMore,
-      setOffset,
-      setIsLoading,
-      hasMore,
-      setHasFetchedData,
-      filtersOverride || filters,
-      reset
-    );
-  };
+  await fetchData(
+    reset ? 0 : offset,
+    limit,
+    columns,
+    setColumns,
+    setHasMore,
+    setOffset,
+    setIsLoading,
+    hasMore,
+    setHasFetchedData,
+    filtersOverride || filters, // Usa os filtros passados ou o estado atual
+    reset
+  );
+};
+
 
   const handleSearch = (newFilters) => {
-    setFilters(newFilters);
-    loadColumnsData(true, newFilters); // Atualiza dinamicamente
+    setFilters(newFilters); // Atualiza o estado para manter a consistência
+    loadColumnsData(true, newFilters); // Passa os novos filtros diretamente
   };
 
-  useEffect(() => {
+
+   useEffect(() => {
     loadColumnsData();
   }, []);
 
