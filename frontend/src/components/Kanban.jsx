@@ -95,8 +95,8 @@ const Kanban = () => {
       {error && <div className="bg-red-500 text-white text-center py-2 mb-4 rounded">{error}</div>}
       <DragDropContext onDragEnd={onDragEnd}>
         {/* Contêiner com scroll horizontal */}
-        <div className="overflow-x-scroll scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
-          <div className="flex gap-6 p-8 bg-gray-100 min-h-screen w-max">
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
+          <div className="flex gap-6 p-8 bg-white-100 min-h-screen min-w-max">
             {Object.entries(columns).map(([columnId, items]) => (
               <KanbanColumn
                 key={columnId}
