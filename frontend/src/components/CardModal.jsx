@@ -20,19 +20,19 @@ const CardModal = ({ card, onClose }) => {
         {/* Botão Fechar (X) */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-lg"
+          className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-3xl"
         >
           &times;
         </button>
 
         {/* Título */}
-        <h2 className="text-lg font-bold text-blue-800 mb-3">
+        <h2 className="text-lg font-bold text-blue-900 mb-3">
           Publicação - {getField(card.processo)}
         </h2>
 
         {/* Data de Publicação */}
         <p className="text-sm text-gray-700 mb-2">
-          <strong>Data de publicação no DJE:</strong> {getField(card.data_disponibilizacao)}
+          <strong>Data de publicação no DJE:</strong> {getField(card.data_disponibilizacao.split('-').reverse().join('/'))}
         </p>
 
         <hr className="my-2 border-gray-300" />
@@ -80,7 +80,7 @@ const CardModal = ({ card, onClose }) => {
         <p className="text-sm text-gray-700 mt-3">
           <strong>Conteúdo da Publicação:</strong>
         </p>
-        <div className="bg-gray-100 p-2 rounded-md max-h-80 overflow-y-auto text-gray-600 text-sm">
+        <div className="bg-gray-100 p-2 rounded-md max-h-60 overflow-y-auto text-gray-600 text-sm">
           {getField(card.paragrafo)}
         </div>
       </div>

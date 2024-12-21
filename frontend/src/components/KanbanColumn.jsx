@@ -2,7 +2,10 @@ import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 import KanbanCard from "./KanbanCard";
 
-const KanbanColumn = ({ columnId, items, setSelectedCard, isUpdating }) => {
+const KanbanColumn = ( { columnId, items, setSelectedCard, isUpdating } ) =>
+{
+
+  console.log("columnId", items);
   const columnTitles = {
     nova: "Nova Publicação",
     lida: "Publicação Lida",

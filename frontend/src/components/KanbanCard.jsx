@@ -1,6 +1,8 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { timeFromNow } from "./kanbanUtils";
+import { FaClock, FaCalendarAlt } from "react-icons/fa";
+
 
 const KanbanCard = ({ item, index, setSelectedCard, isUpdating }) => (
   <Draggable key={item.id} draggableId={item.id.toString()} index={index} isDragDisabled={isUpdating}>
@@ -16,8 +18,8 @@ const KanbanCard = ({ item, index, setSelectedCard, isUpdating }) => (
       >
         <h3 className="text-gray-700 font-semibold mb-2">{item.processo}</h3>
         <div className="flex items-center text-gray-500 text-sm gap-4">
-          <span className="flex items-center">⏱ {timeFromNow(item.updatedAt)}</span>
-          <span className="flex items-center">📅 {new Date(item.createdAt).toLocaleDateString()}</span>
+          <span className="flex items-center"><FaClock className="mr-1" /> {timeFromNow(item.updatedAt)}</span>
+          <span className="flex items-center"><FaCalendarAlt className="mr-1" /> {item.data_disponibilizacao.split('-').reverse().join('/')}</span>
         </div>
       </div>
     )}
