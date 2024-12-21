@@ -3,7 +3,6 @@ import { DragDropContext } from "react-beautiful-dnd";
 import KanbanColumn from "./KanbanColumn";
 import CardModal from "./CardModal";
 import { fetchData, updateStatus, isValidMove } from "./kanbanUtils";
-
 const Kanban = () => {
   const [columns, setColumns] = useState({
     nova: [],
@@ -17,6 +16,7 @@ const Kanban = () => {
     processada: true,
     concluída: true,
   });
+  const [hasFetchedData, setHasFetchedData] = useState(true); // Estado de controle
   const [selectedCard, setSelectedCard] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState("");
@@ -26,6 +26,11 @@ const Kanban = () => {
   const loaderRef = useRef(null);
 
   const loadColumnsData = async () => {
+    if (!hasFetchedData) {
+      console.warn("Requisição bloqueada: Nenhuma publicação encontrada anteriormente.");
+      return;
+    }
+
     await fetchData(
       offset,
       limit,
@@ -34,7 +39,8 @@ const Kanban = () => {
       setHasMore,
       setOffset,
       setIsLoading,
-      hasMore
+      hasMore,
+      setHasFetchedData
     );
   };
 
@@ -45,7 +51,7 @@ const Kanban = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && Object.values(hasMore).some((value) => value)) {
+        if (entries[0].isIntersecting && hasFetchedData && Object.values(hasMore).some((value) => value)) {
           loadColumnsData();
         }
       },
@@ -61,7 +67,7 @@ const Kanban = () => {
         observer.unobserve(loaderRef.current);
       }
     };
-  }, [loaderRef.current, hasMore]);
+  }, [loaderRef.current, hasMore, hasFetchedData]);
 
   const onDragEnd = async (result) => {
     const { source, destination } = result;

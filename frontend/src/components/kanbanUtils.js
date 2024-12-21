@@ -72,10 +72,10 @@ export const fetchData = async (
 	setHasMore,
 	setOffset,
 	setIsLoading,
-	hasMore
+	hasMore,
+	setHasFetchedData
 ) =>
 {
-	// Verifica se ainda há dados para carregar
 	if ( !Object.values( hasMore ).some( ( value ) => value ) )
 	{
 		console.warn( "Sem mais dados para carregar. Ignorando requisição." );
@@ -107,7 +107,20 @@ export const fetchData = async (
 
 		const data = await response.json();
 
-		// Atualiza colunas e verifica se há mais dados a serem carregados
+		const isEmptyResponse =
+			!data.nova.publicacoes.length &&
+			!data.lida.publicacoes.length &&
+			!data.processada.publicacoes.length &&
+			!data.concluida.publicacoes.length;
+
+		if ( isEmptyResponse )
+		{
+			console.warn( "Nenhuma publicação retornada. Interrompendo novas requisições." );
+			setHasFetchedData( false );
+			setIsLoading( false );
+			return;
+		}
+
 		const newColumns = {
 			nova: [...columns.nova, ...data.nova.publicacoes],
 			lida: [...columns.lida, ...data.lida.publicacoes],
@@ -125,6 +138,7 @@ export const fetchData = async (
 		setColumns( newColumns );
 		setHasMore( newHasMore );
 		setOffset( ( prevOffset ) => prevOffset + limit );
+		setHasFetchedData( true ); // Mantém ativo caso haja dados
 	} catch ( error )
 	{
 		console.error( "Erro ao buscar dados:", error );
