@@ -16,7 +16,7 @@ const CardModal = ({ card, onClose }) => {
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
       onClick={handleOverlayClick}
     >
-      <div className="bg-white p-4 rounded-lg shadow-lg max-w-md w-full max-h-[90vh] overflow-y-auto relative">
+      <div className="bg-white p-4 rounded-lg shadow-lg max-w-md w-full max-h-[90vh] overflow-y-auto relative sm:w-5/6">
         {/* Botão Fechar (X) */}
         <button
           onClick={onClose}
