@@ -5,7 +5,7 @@ CREATE SCHEMA IF NOT EXISTS public;
 CREATE TABLE IF NOT EXISTS public.documentos (
     id SERIAL PRIMARY KEY,
     arquivo TEXT,
-    data_disponibilizacao TEXT,
+    data_disponibilizacao DATE,
     processo TEXT,
     autores TEXT,
     advogados TEXT,

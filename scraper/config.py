@@ -1,5 +1,6 @@
 # config.py
 import os
+from datetime import datetime
 
 # Diretório para salvar PDFs
 OUTPUT_DIR = "./pdfs2"
@@ -16,7 +17,7 @@ os.makedirs(PDF_FOLDER, exist_ok=True)
 
 # Configurações do banco
 DB_CONFIG = {
-    'host': '3.135.200.72',
+    'host': 'meu_postgres',
     'port': 5432,
     'database': 'meu_banco',
     'user': 'meu_usuario',
@@ -56,5 +57,10 @@ HEADERS_TROCA = {
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': '"Linux"',
 }
+data_atual = datetime.now().strftime('%d%%2F%m%%2F%Y')
 
-DATA_INICIAL = 'dadosConsulta.dtInicio=19%2F11%2F2024&dadosConsulta.dtFim=22%2F12%2F2024&dadosConsulta.cdCaderno=12&dadosConsulta.pesquisaLivre=%22RPV%22+e+%22pagamento+pelo+INSS%22&pagina='
+print(data_atual)
+
+#se for a primira vez que rodar, descomentar a linha abaixo e comentar a linha de baixo
+#DATA_INICIAL = f'dadosConsulta.dtInicio=19%2F11%2F2024&dadosConsulta.dtFim={data_atual}&dadosConsulta.cdCaderno=12&dadosConsulta.pesquisaLivre=%22RPV%22+e+%22pagamento+pelo+INSS%22&pagina='
+DATA_INICIAL = f'dadosConsulta.dtInicio={data_atual}&dadosConsulta.dtFim={data_atual}&dadosConsulta.cdCaderno=12&dadosConsulta.pesquisaLivre=%22RPV%22+e+%22pagamento+pelo+INSS%22&pagina='
