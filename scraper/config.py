@@ -62,5 +62,5 @@ data_atual = datetime.now().strftime('%d%%2F%m%%2F%Y')
 print(data_atual)
 
 #se for a primira vez que rodar, descomentar a linha abaixo e comentar a linha de baixo
-DATA_INICIAL = f'dadosConsulta.dtInicio=19%2F11%2F2024&dadosConsulta.dtFim={data_atual}&dadosConsulta.cdCaderno=12&dadosConsulta.pesquisaLivre=%22RPV%22+e+%22pagamento+pelo+INSS%22&pagina='
-#DATA_INICIAL = f'dadosConsulta.dtInicio={data_atual}&dadosConsulta.dtFim={data_atual}&dadosConsulta.cdCaderno=12&dadosConsulta.pesquisaLivre=%22RPV%22+e+%22pagamento+pelo+INSS%22&pagina='
+#DATA_INICIAL = f'dadosConsulta.dtInicio=19%2F11%2F2024&dadosConsulta.dtFim={data_atual}&dadosConsulta.cdCaderno=12&dadosConsulta.pesquisaLivre=%22RPV%22+e+%22pagamento+pelo+INSS%22&pagina='
+DATA_INICIAL = f'dadosConsulta.dtInicio={data_atual}&dadosConsulta.dtFim={data_atual}&dadosConsulta.cdCaderno=12&dadosConsulta.pesquisaLivre=%22RPV%22+e+%22pagamento+pelo+INSS%22&pagina='
