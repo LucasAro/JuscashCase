@@ -52,17 +52,30 @@ export const isValidMove = ( source, destination ) =>
 	const sourceIndex = order.indexOf( source );
 	const destinationIndex = order.indexOf( destination );
 
+	// Verifica se os índices são válidos
+	if ( sourceIndex === -1 || destinationIndex === -1 )
+	{
+		return false;
+	}
+
+	// Permite mover para a próxima coluna ou voltar de "processada" para "lida"
 	if (
-		( destinationIndex < sourceIndex &&
-			!( source === "processada" && destination === "lida" ) ) ||
-		destinationIndex - sourceIndex > 1
+		destinationIndex < sourceIndex &&
+		!( source === "processada" && destination === "lida" )
 	)
+	{
+		return false;
+	}
+
+	// Impede pular mais de uma coluna
+	if ( destinationIndex - sourceIndex > 1 )
 	{
 		return false;
 	}
 
 	return true;
 };
+
 
 export const fetchData = async (
 	offset,
@@ -127,21 +140,38 @@ export const fetchData = async (
 		//   }
 
 		const newColumns = {
-			nova: reset ? data.nova.publicacoes : [...columns.nova, ...data.nova.publicacoes],
-			lida: reset ? data.lida.publicacoes : [...columns.lida, ...data.lida.publicacoes],
-			processada: reset ? data.processada.publicacoes : [...columns.processada, ...data.processada.publicacoes],
-			concluída: reset ? data.concluida.publicacoes : [...columns.concluída, ...data.concluida.publicacoes],
+			nova: {
+				publicacoes: reset ? data.nova.publicacoes : [...columns.nova.publicacoes, ...data.nova.publicacoes],
+				total: data.nova.total,
+			},
+			lida: {
+				publicacoes: reset ? data.lida.publicacoes : [...columns.lida.publicacoes, ...data.lida.publicacoes],
+				total: data.lida.total,
+			},
+			processada: {
+				publicacoes: reset ? data.processada.publicacoes : [...columns.processada.publicacoes, ...data.processada.publicacoes],
+				total: data.processada.total,
+			},
+			concluída: {
+				publicacoes: reset ? data.concluida.publicacoes : [...columns.concluída.publicacoes, ...data.concluida.publicacoes],
+				total: data.concluida.total,
+			},
 		};
+
+
 
 		const newHasMore = {
-			nova: newColumns.nova.length < data.nova.total,
-			lida: newColumns.lida.length < data.lida.total,
-			processada: newColumns.processada.length < data.processada.total,
-			concluída: newColumns.concluída.length < data.concluida.total,
+			nova: newColumns.nova.publicacoes.length < data.nova.total,
+			lida: newColumns.lida.publicacoes.length < data.lida.total,
+			processada: newColumns.processada.publicacoes.length < data.processada.total,
+			concluída: newColumns.concluída.publicacoes.length < data.concluida.total,
 		};
 
-		setColumns( newColumns );
 		setHasMore( newHasMore );
+
+
+		setColumns( newColumns );
+		//setHasMore( newHasMore );
 		setOffset( ( prevOffset ) => ( reset ? limit : prevOffset + limit ) ); // Reinicia o offset se for um reset
 		setHasFetchedData( true );
 	} catch ( error )

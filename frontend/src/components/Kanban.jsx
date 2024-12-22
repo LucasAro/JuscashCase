@@ -7,11 +7,12 @@ import SearchBar from "./SearchBar";
 
 const Kanban = () => {
   const [columns, setColumns] = useState({
-    nova: [],
-    lida: [],
-    processada: [],
-    concluída: [],
+    nova: { publicacoes: [], total: 0 },
+    lida: { publicacoes: [], total: 0 },
+    processada: { publicacoes: [], total: 0 },
+    concluída: { publicacoes: [], total: 0 },
   });
+
   const [hasMore, setHasMore] = useState({
     nova: true,
     lida: true,
@@ -87,38 +88,82 @@ const Kanban = () => {
 
   const onDragEnd = async (result) => {
     const { source, destination } = result;
-    if (!destination || source.droppableId === destination.droppableId) return;
 
+    // Verifica se o destino é válido
+    if (!destination) return;
+
+    // Se for na mesma coluna, apenas reordene os cards
+    if (source.droppableId === destination.droppableId) {
+      const column = Array.from(columns[source.droppableId].publicacoes);
+      const [movedItem] = column.splice(source.index, 1);
+      column.splice(destination.index, 0, movedItem);
+
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...columns[source.droppableId],
+          publicacoes: column,
+        },
+      });
+
+      return; // Não chama o updateStatus
+    }
+
+    // Verifica se o movimento é permitido entre colunas
     if (!isValidMove(source.droppableId, destination.droppableId)) {
       setError("Movimentação não permitida!");
       setTimeout(() => setError(""), 3000);
       return;
     }
 
-    const sourceColumn = Array.from(columns[source.droppableId]);
-    const destColumn = Array.from(columns[destination.droppableId]);
+    // Acessa as colunas corretamente
+    const sourceColumn = Array.from(columns[source.droppableId].publicacoes);
+    const destColumn = Array.from(columns[destination.droppableId].publicacoes);
+
+    // Remove o item da coluna de origem
     const [movedItem] = sourceColumn.splice(source.index, 1);
 
+    // Atualiza o status do item via API
     setIsUpdating(true);
-    const updatedItem = await updateStatus(movedItem.id, destination.droppableId);
+    try {
+      const updatedItem = await updateStatus(movedItem.id, destination.droppableId);
 
-    if (updatedItem) {
-      destColumn.splice(destination.index, 0, updatedItem);
-      setColumns({
-        ...columns,
-        [source.droppableId]: sourceColumn,
-        [destination.droppableId]: destColumn,
-      });
-    } else {
+      if (updatedItem) {
+        // Adiciona o item atualizado à coluna de destino
+        destColumn.splice(destination.index, 0, updatedItem);
+
+        setColumns({
+          ...columns,
+          [source.droppableId]: {
+            ...columns[source.droppableId],
+            publicacoes: sourceColumn,
+            total: columns[source.droppableId].total - 1,
+          },
+          [destination.droppableId]: {
+            ...columns[destination.droppableId],
+            publicacoes: destColumn,
+            total: columns[destination.droppableId].total + 1,
+          },
+        });
+      } else {
+        throw new Error("Erro ao atualizar o status do item.");
+      }
+    } catch (error) {
+      console.error("Erro ao mover item:", error);
+
+      // Reverte a alteração em caso de erro
       sourceColumn.splice(source.index, 0, movedItem);
+
       setColumns({
         ...columns,
-        [source.droppableId]: sourceColumn,
-        [destination.droppableId]: destColumn,
+        [source.droppableId]: {
+          ...columns[source.droppableId],
+          publicacoes: sourceColumn,
+        },
       });
+    } finally {
+      setIsUpdating(false);
     }
-
-    setIsUpdating(false);
   };
 
 
@@ -129,15 +174,18 @@ const Kanban = () => {
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200">
           <div className="flex gap-6 p-8 bg-white-100 min-h-screen min-w-max">
-            {Object.entries(columns).map(([columnId, items]) => (
-              <KanbanColumn
-                key={columnId}
-                columnId={columnId}
-                items={items}
-                setSelectedCard={setSelectedCard}
-                isUpdating={isUpdating}
-              />
-            ))}
+          {Object.entries(columns).map(([columnId, columnData]) => (
+            <KanbanColumn
+              key={columnId}
+              columnId={columnId}
+              items={columnData} // Passa o objeto inteiro, incluindo publicacoes e total
+              total={columnData.total || 0} // Passa o total
+              setSelectedCard={setSelectedCard}
+              isUpdating={isUpdating}
+            />
+          ))}
+
+
           </div>
         </div>
       </DragDropContext>

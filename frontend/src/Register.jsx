@@ -78,13 +78,14 @@ const Register = () => {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-lg p-8 bg-white rounded-lg shadow-lg border border-gray-300">
+    <div className="flex h-screen items-center justify-center bg-grayDefault">
+    <div className="w-full max-w-lg p-8  h-full flex items-center bg-white  shadow-lg border border-gray-300">
+    <div className="w-full max-w-lg  bg-white ">
         <img src={Logo} alt="JusCash" className="w-60 mx-auto mb-8" />
         <form onSubmit={handleRegister}>
           {/* Nome Completo */}
           <div className="mb-4">
-            <label className="block text-blue-950 font-semibold">
+            <label className="block text-blueDefault font-medium">
               Seu nome completo <span className="text-red-500">*</span>
             </label>
             <input
@@ -100,7 +101,7 @@ const Register = () => {
 
           {/* E-mail */}
           <div className="mb-4">
-            <label className="block text-blue-950 font-semibold">
+            <label className="block text-blueDefault font-medium">
               E-mail <span className="text-red-500">*</span>
             </label>
             <input
@@ -116,7 +117,7 @@ const Register = () => {
 
           {/* Senha */}
           <div className="mb-4 relative">
-            <label className="block text-blue-950 font-semibold">
+            <label className="block text-blueDefault font-medium">
               Senha <span className="text-red-500">*</span>
             </label>
             <input
@@ -138,7 +139,7 @@ const Register = () => {
 
           {/* Confirme sua senha */}
           <div className="mb-4 relative">
-            <label className="block text-blue-950 font-semibold">
+            <label className="block text-blueDefault font-medium">
               Confirme sua senha <span className="text-red-500">*</span>
             </label>
             <input
@@ -172,20 +173,20 @@ const Register = () => {
               disabled={loading}
               className={`${
                 loading ? "bg-green-400" : "bg-green-500 hover:bg-green-600"
-              } text-white font-semibold px-6 py-2 rounded-md transition duration-300 `}
+              } text-white font-medium px-6 py-2 rounded-md transition duration-300 `}
             >
               {loading ? "Aguarde..." : "Criar conta"}
             </button>
           </div>
         </form>
 
-        <p className="mt-6 text-sm font-semibold text-end text-blue-950">
-          Já possui uma conta?{" "}
-          <a href="/" className="hover:underline">
-            Fazer o login
+        <p className="mt-6 text-sm font-medium text-end text-blueDefault">
+          <a href="/" className="underline hover:text-blue-950">
+          Já possui uma conta?{" "} Fazer o login
           </a>
         </p>
-      </div>
+        </div>
+        </div>
     </div>
   );
 };

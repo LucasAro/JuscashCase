@@ -2,16 +2,15 @@ import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 import KanbanCard from "./KanbanCard";
 
-const KanbanColumn = ( { columnId, items, setSelectedCard, isUpdating } ) =>
-{
-
-  console.log("columnId", items);
+const KanbanColumn = ({ columnId, items, total, setSelectedCard, isUpdating }) => {
   const columnTitles = {
     nova: "Nova Publicação",
     lida: "Publicação Lida",
     processada: "Enviar para o Advogado Responsável",
     concluída: "Concluído",
   };
+
+  const publicacoes = items?.publicacoes || []; // Garante que seja um array
 
   return (
     <Droppable droppableId={columnId}>
@@ -29,13 +28,14 @@ const KanbanColumn = ( { columnId, items, setSelectedCard, isUpdating } ) =>
             >
               {columnTitles[columnId]}
             </h2>
-            <span className="ml-3 text-gray-500 font-semibold">{items.length}</span>
+            {/* Exibindo o total ao invés do length */}
+            <span className="ml-3 text-gray-500 font-semibold">{total}</span>
           </div>
           <div className="border-b border-gray-300 mb-4"></div>
-          {items.length === 0 ? (
+          {publicacoes.length === 0 ? (
             <div className="text-gray-500 text-center py-4">Nenhum card encontrado</div>
           ) : (
-            items.map((item, index) => (
+            publicacoes.map((item, index) => (
               <KanbanCard
                 key={item.id}
                 item={item}

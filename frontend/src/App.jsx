@@ -101,12 +101,13 @@ const Login = () => {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-lg p-8 bg-white rounded-lg shadow-lg border border-gray-300">
+    <div className="flex h-screen items-center justify-center bg-grayDefault">
+      <div className="w-full max-w-lg p-8  h-full flex items-center bg-white  shadow-lg border border-gray-300">
+      <div className="w-full max-w-lg  bg-white ">
         <img src={Logo} alt="JusCash" className="w-60 mx-auto mb-8" />
         <form onSubmit={handleLogin}>
           <div className="mb-6">
-            <label htmlFor="email" className="block text-blue-950 font-semibold text-lg">
+            <label htmlFor="email" className="block text-blueDefault font-medium text-lg">
               E-mail:
             </label>
             <input
@@ -115,13 +116,13 @@ const Login = () => {
               placeholder="Digite seu e-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 mt-2 border border-blue-950 rounded-md focus:ring-2 focus:ring-blue-600"
+              className="w-full p-3 mt-2 border border-blueDefault rounded-md focus:ring-2 focus:ring-blue-600"
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
           <div className="mb-6 relative">
-            <label htmlFor="password" className="block text-blue-950 font-semibold text-lg">
+            <label htmlFor="password" className="block text-blueDefault font-medium text-lg">
               Senhas:
             </label>
             <input
@@ -146,23 +147,23 @@ const Login = () => {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-greenDefault w-[40%] text-white px-6 py-2 rounded-md hover:bg-green-600 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading} // Desativar o botão enquanto está carregando
             >
               {isLoading ? "Aguarde..." : "Login"} {/* Mostrar "Aguarde..." enquanto carrega */}
             </button>
           </div>
         </form>
-        <p className="mt-6 font-semibold text-sm text-center text-blue-950">
-          Não possui uma conta?{" "}
+        <p className="mt-6 font-medium underline text-sm text-center text-blueDefault">
           <a
             href="/register"
-            className="hover:underline"
+            className="hover: text-blue-950"
           >
-            Cadastra-se
+            Não possui uma conta?{" "} Cadastra-se
           </a>
         </p>
-      </div>
+        </div>
+        </div>
     </div>
   );
 };
