@@ -4,6 +4,9 @@
 
 objetivo principal é criar um sistema para automação de scraping de publicações do Diário da Justiça Eletrônico (DJE) de São Paulo, gerenciamento via API, e uma interface de usuário para acompanhamento dessas publicações.
 
+## Link para o Deploy na AWS, utilizando GitHub Actions
+http://3.135.200.72:5173/
+
 ## Funcionalidades
 
 ### Backend
