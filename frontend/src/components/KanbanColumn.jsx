@@ -18,12 +18,12 @@ const KanbanColumn = ({ columnId, items, total, setSelectedCard, isUpdating }) =
         <div
           ref={provided.innerRef}
           {...provided.droppableProps}
-          className="flex flex-col bg-gray-100 rounded-lg shadow p-4 min-h-[400px] min-w-[295px] w-full"
+          className="flex flex-col bg-grayDefault rounded-lg shadow p-4 min-h-[400px] min-w-[295px] w-full"
         >
           <div className="flex items-center mb-4">
             <h2
-              className={`text-base font-bold ${
-                columnId === "concluída" ? "text-green-600" : "text-blue-950"
+              className={`text-base font-medium ${
+                columnId === "concluída" ? "text-green-600" : "text-blueDefault"
               }`}
             >
               {columnTitles[columnId]}

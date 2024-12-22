@@ -28,12 +28,12 @@ const SearchBar = ({ onSearch }) => {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 llg:space-y-0">
           <div className="flex items-center space-x-2">
             <FaBalanceScale className="text-blue-950" size={35} />
-            <h1 className="text-3xl font-medium text-gray-800">Publicações</h1>
+            <h1 className="text-3xl font-semibold text-blueDefault">Publicações</h1>
           </div>
 
           <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 w-full lg:w-2/3">
             <div className="flex-grow">
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
+              <label className="text-sm font-semibold text-blueDefault mb-2 block">
                 Pesquisar
               </label>
               <input
@@ -47,7 +47,7 @@ const SearchBar = ({ onSearch }) => {
 
             <div className="flex items-center space-x-2 mt-4 lg:mt-0">
               <div className="flex flex-col flex-grow lg:flex-grow-0 w-full lg:w-auto">
-                <label className="text-sm font-medium text-gray-700 mb-2">
+                <label className="text-sm font-semibold text-blueDefault mb-2">
                   Data do diário
                 </label>
                 <div className="flex items-center space-x-2 w-full">

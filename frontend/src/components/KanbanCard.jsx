@@ -16,7 +16,7 @@ const KanbanCard = ({ item, index, setSelectedCard, isUpdating }) => (
         {...provided.dragHandleProps}
         onClick={() => setSelectedCard(item)}
       >
-        <h3 className="text-gray-700 font-semibold mb-2">{item.processo}</h3>
+        <h3 className="text-gray-700 font-medium mb-2">{item.processo}</h3>
         <div className="flex items-center text-gray-500 text-sm gap-4">
           <span className="flex items-center"><FaClock className="mr-1" /> {timeFromNow(item.updatedAt)}</span>
           <span className="flex items-center"><FaCalendarAlt className="mr-1" /> {item.data_disponibilizacao.split('-').reverse().join('/')}</span>
