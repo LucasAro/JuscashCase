@@ -4,12 +4,12 @@ const db = require( '../db' );
 const Usuario = db.define( 'Usuario', {
 	nome: DataTypes.STRING,
 	email: DataTypes.STRING,
-	senha: DataTypes.STRING, // Hash da senha será armazenado
+	senha: DataTypes.STRING,
 },
 	{
-		tableName: 'users', // Define explicitamente o nome da tabela
-		underscored: true, // Configura automaticamente created_at e updated_at
-		timestamps: true, // Para usar createdAt e updatedAt
+		tableName: 'users',
+		underscored: true,
+		timestamps: true,
 	} );
 
 module.exports = Usuario;

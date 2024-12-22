@@ -4,11 +4,16 @@ const cors = require( 'cors' );
 const db = require( './db' );
 const publicacoesRoutes = require( './routes/publicacoes' );
 const usuariosRoutes = require( './routes/usuarios' );
+const { swaggerUi, swaggerDocs } = require( './swagger' );
 
 const app = express();
 app.use( cors() );
 app.use( express.json() );
 
+// Documentação Swagger
+app.use( '/api-docs', swaggerUi.serve, swaggerUi.setup( swaggerDocs ) );
+
+// Rotas
 app.use( '/publicacoes', publicacoesRoutes );
 app.use( '/usuarios', usuariosRoutes );
 

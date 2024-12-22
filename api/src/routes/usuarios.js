@@ -2,19 +2,17 @@ const express = require( 'express' );
 const bcrypt = require( 'bcrypt' );
 const jwt = require( 'jsonwebtoken' );
 const Usuario = require( '../models/Usuario' );
-const autenticarToken = require( '../middleware/auth' ); // Importa o middleware
-const blacklist = require( '../middleware/blacklist' ); // Middleware de autenticação
+const autenticarToken = require( '../middleware/auth' );
+const blacklist = require( '../middleware/blacklist' );
 
 const router = express.Router();
 
-// Função para validar e-mail
 const validarEmail = ( email ) =>
 {
 	const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	return regex.test( email );
 };
 
-// Função para validar senha
 const validarSenha = ( senha ) =>
 {
 	const erros = [];
@@ -42,6 +40,68 @@ const validarSenha = ( senha ) =>
 };
 
 // Registro de usuários
+/**
+ * @swagger
+ * tags:
+ *   name: Usuários
+ *   description: Gerenciamento de usuários - registro, login, validação e logout.
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Usuario:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID do usuário
+ *         nome:
+ *           type: string
+ *           description: Nome do usuário
+ *         email:
+ *           type: string
+ *           description: Email do usuário
+ *         senha:
+ *           type: string
+ *           description: Senha do usuário (não retorna na resposta)
+ */
+
+/**
+ * @swagger
+ * /usuarios/register:
+ *   post:
+ *     summary: Registra um novo usuário
+ *     tags: [Usuários]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *                 description: Nome do usuário
+ *               email:
+ *                 type: string
+ *                 description: Email do usuário
+ *               senha:
+ *                 type: string
+ *                 description: Senha do usuário
+ *     responses:
+ *       200:
+ *         description: Usuário registrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       400:
+ *         description: Dados inválidos
+ *       500:
+ *         description: Erro no servidor
+ */
 router.post( '/register', async ( req, res ) =>
 {
 	const { nome, email, senha } = req.body;
@@ -69,6 +129,41 @@ router.post( '/register', async ( req, res ) =>
 } );
 
 // Login
+/**
+ * @swagger
+ * /usuarios/login:
+ *   post:
+ *     summary: Faz login e retorna um token JWT
+ *     tags: [Usuários]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Email do usuário
+ *               senha:
+ *                 type: string
+ *                 description: Senha do usuário
+ *     responses:
+ *       200:
+ *         description: Login realizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Token JWT para autenticação
+ *       401:
+ *         description: Credenciais inválidas
+ *       500:
+ *         description: Erro no servidor
+ */
 router.post( '/login', async ( req, res ) =>
 {
 	const { email, senha } = req.body;
@@ -88,6 +183,21 @@ router.post( '/login', async ( req, res ) =>
 } );
 
 // Validar token
+
+/**
+ * @swagger
+ * /usuarios/validate:
+ *   post:
+ *     summary: Valida um token JWT
+ *     tags: [Usuários]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token válido
+ *       401:
+ *         description: Token inválido ou expirado
+ */
 router.post( '/validate', async ( req, res ) =>
 {
 	autenticarToken( req, res, () =>
@@ -97,12 +207,26 @@ router.post( '/validate', async ( req, res ) =>
 } );
 
 // Logout
+/**
+ * @swagger
+ * /usuarios/logout:
+ *   post:
+ *     summary: Faz logout do usuário (invalida o token atual)
+ *     tags: [Usuários]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout realizado com sucesso
+ *       400:
+ *         description: Token não fornecido
+ */
 router.post( '/logout', autenticarToken, ( req, res ) =>
 {
-	const token = req.headers.authorization?.replace( 'Bearer ', '' ); // Captura o token sem o prefixo "Bearer"
+	const token = req.headers.authorization?.replace( 'Bearer ', '' );
 	if ( token )
 	{
-		blacklist.add( token ); // Adiciona o token à blacklist
+		blacklist.add( token );
 		res.status( 200 ).json( { message: 'Logout realizado com sucesso' } );
 	} else
 	{

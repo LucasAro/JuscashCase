@@ -14,9 +14,9 @@ const Publicacao = db.define( 'Publicacao', {
 	reu: DataTypes.STRING,
 	status: DataTypes.STRING,
 }, {
-	tableName: 'documentos', // Define explicitamente o nome da tabela
-	underscored: true, // Configura automaticamente created_at e updated_at
-	timestamps: true, // Para usar createdAt e updatedAt
+	tableName: 'documentos',
+	underscored: true,
+	timestamps: true,
 } );
 
 module.exports = Publicacao;

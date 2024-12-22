@@ -1,18 +1,104 @@
 const express = require( 'express' );
 const { Op, Sequelize } = require( 'sequelize' );
 const Publicacao = require( '../models/Publicacao' );
-const autenticarToken = require( '../middleware/auth' ); // Importa o middleware
+const autenticarToken = require( '../middleware/auth' );
 
 const router = express.Router();
 
-// Buscar publicações com filtros (rota protegida)
+/**
+ * @swagger
+ * tags:
+ *   name: Publicações
+ *   description: Gerenciamento de publicações - busca, detalhes e alteração de status.
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Publicacao:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: ID da publicação
+ *         processo:
+ *           type: string
+ *           description: Número do processo
+ *         autores:
+ *           type: string
+ *           description: Nome dos autores
+ *         status:
+ *           type: string
+ *           enum: [nova, lida, processada, concluída]
+ *           description: Status da publicação
+ *         data_disponibilizacao:
+ *           type: string
+ *           format: date
+ *           description: Data de disponibilização
+ */
+
+/**
+ * @swagger
+ * /publicacoes:
+ *   get:
+ *     summary: Busca publicações com filtros
+ *     tags: [Publicações]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Palavra-chave para busca por número do processo ou nomes de envolvidos
+ *       - in: query
+ *         name: dataInicio
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Data de início no formato YYYY-MM-DD
+ *       - in: query
+ *         name: dataFim
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Data de fim no formato YYYY-MM-DD
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *         description: Número de registros a pular (para paginação)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Número máximo de registros a retornar
+ *     responses:
+ *       200:
+ *         description: Lista de publicações filtradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nova:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     publicacoes:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Publicacao'
+ *       500:
+ *         description: Erro interno do servidor
+ */
 router.get( '/', autenticarToken, async ( req, res ) =>
 {
 	const { search, dataInicio, dataFim, offset = 0, limit = 30 } = req.query;
-
 	const baseWhere = {};
 
-	// Filtro por "search" (número do processo ou nomes de envolvidos)
 	if ( search )
 	{
 		baseWhere[Op.or] = [
@@ -23,27 +109,25 @@ router.get( '/', autenticarToken, async ( req, res ) =>
 		];
 	}
 
-	// Filtros de data para o campo DATE
 	if ( dataInicio && dataFim )
 	{
 		baseWhere.data_disponibilizacao = {
-			[Op.between]: [dataInicio, dataFim], // Comparação direta com strings no formato 'YYYY-MM-DD'
+			[Op.between]: [dataInicio, dataFim],
 		};
 	} else if ( dataInicio )
 	{
 		baseWhere.data_disponibilizacao = {
-			[Op.gte]: dataInicio, // Maior ou igual à data inicial
+			[Op.gte]: dataInicio,
 		};
 	} else if ( dataFim )
 	{
 		baseWhere.data_disponibilizacao = {
-			[Op.lte]: dataFim, // Menor ou igual à data final
+			[Op.lte]: dataFim,
 		};
 	}
 
 	try
 	{
-		// Função para buscar publicações por status
 		const fetchByStatus = async ( status ) =>
 		{
 			const where = { ...baseWhere, status };
@@ -59,13 +143,11 @@ router.get( '/', autenticarToken, async ( req, res ) =>
 			return { total, publicacoes };
 		};
 
-		// Buscar publicações separadamente para cada status
 		const nova = await fetchByStatus( 'nova' );
 		const lida = await fetchByStatus( 'lida' );
 		const processada = await fetchByStatus( 'processada' );
 		const concluida = await fetchByStatus( 'concluída' );
 
-		// Organizar a resposta
 		const resposta = {
 			nova: {
 				total: nova.total,
@@ -93,6 +175,55 @@ router.get( '/', autenticarToken, async ( req, res ) =>
 	}
 } );
 
+
+/**
+ * @swagger
+ * /publicacoes/status:
+ *   get:
+ *     summary: Obtém o total de publicações por status
+ *     tags: [Publicações]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *         description: Número de registros a pular (para paginação)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Número máximo de registros a retornar
+ *     responses:
+ *       200:
+ *         description: Totais de publicações por status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nova:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     publicacoes:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Publicacao'
+ *                 lida:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     publicacoes:
+ *                       type: array
+ *                         items:
+ *                           $ref: '#/components/schemas/Publicacao'
+ *       500:
+ *         description: Erro interno do servidor
+ */
 router.get( '/status', autenticarToken, async ( req, res ) =>
 {
 	const { offset = 0, limit = 30 } = req.query;
@@ -148,6 +279,33 @@ router.get( '/status', autenticarToken, async ( req, res ) =>
 } );
 
 
+/**
+ * @swagger
+ * /publicacoes/{id}:
+ *   get:
+ *     summary: Busca uma publicação por ID
+ *     tags: [Publicações]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID da publicação
+ *     responses:
+ *       200:
+ *         description: Publicação encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Publicacao'
+ *       404:
+ *         description: Publicação não encontrada
+ *       500:
+ *         description: Erro interno do servidor
+ */
 // Buscar uma publicação pelo ID
 router.get( '/:id', autenticarToken, async ( req, res ) =>
 {
@@ -170,6 +328,43 @@ router.get( '/:id', autenticarToken, async ( req, res ) =>
 
 
 
+/**
+ * @swagger
+ * /publicacoes/{id}/status:
+ *   put:
+ *     summary: Atualiza o status de uma publicação (nova, lida, processada, concluída)
+ *     tags: [Publicações]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID da publicação
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [nova, lida, processada, concluída]
+ *     responses:
+ *       200:
+ *         description: Status atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Publicacao'
+ *       404:
+ *         description: Publicação não encontrada
+ *       500:
+ *         description: Erro interno do servidor
+ */
 router.put( '/:id/status', autenticarToken, async ( req, res ) =>
 {
 	const { id } = req.params;
@@ -178,8 +373,8 @@ router.put( '/:id/status', autenticarToken, async ( req, res ) =>
 	try
 	{
 		const [rowsUpdated] = await Publicacao.update(
-			{ status }, // Campos a serem atualizados
-			{ where: { id } } // Condição para encontrar o registro
+			{ status },
+			{ where: { id } }
 		);
 
 		if ( rowsUpdated === 0 )
