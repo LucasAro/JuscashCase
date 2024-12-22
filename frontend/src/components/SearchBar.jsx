@@ -23,7 +23,7 @@ const SearchBar = ({ onSearch }) => {
   }, [searchQuery, startDate, endDate]); // Somente quando esses valores mudam
 
   return (
-    <div className="bg-white shadow-sm py-3">
+    <div className="bg-white py-3">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 llg:space-y-0">
           <div className="flex items-center space-x-2">

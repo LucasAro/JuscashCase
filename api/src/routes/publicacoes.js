@@ -1,5 +1,5 @@
 const express = require( 'express' );
-const { Op } = require( 'sequelize' );
+const { Op, Sequelize } = require( 'sequelize' );
 const Publicacao = require( '../models/Publicacao' );
 const autenticarToken = require( '../middleware/auth' ); // Importa o middleware
 
@@ -51,6 +51,9 @@ router.get( '/', autenticarToken, async ( req, res ) =>
 				where,
 				offset: parseInt( offset, 10 ),
 				limit: parseInt( limit, 10 ),
+				order: [
+					[Sequelize.literal( `ABS(DATE_PART('day', data_disponibilizacao - NOW()))` ), 'ASC']
+				],
 			} );
 			const total = await Publicacao.count( { where } );
 			return { total, publicacoes };
