@@ -76,6 +76,9 @@ cd scraper
 
 #### Configuração Inicial
 - Modifique `DATA_INICIAL` em `config.py` ao rodar a primeira vez para buscar as informações de 19/11/2024 até o dia atual.
+```python
+DATA_INICIAL = f'dadosConsulta.dtInicio=19%2F11%2F2024&dadosConsulta.dtFim {data_atual}&dadosConsulta.cdCaderno=12&dadosConsulta.pesquisaLivre=%22RPV%22+e+%22pagamento+pelo+INSS%22&pagina='
+```
 
 #### Build do Contêiner
 ```bash
@@ -97,13 +100,21 @@ crontab -e
 docker run --network network_scraper python_scraper
 ```
 
-### Após rodar a primeira vez, lembre-se de  modificar `DATA_INICIAL` em `config.py` e buildar novamente o python_scraper
+### Após rodar a primeira vez, lembre-se de  modificar `DATA_INICIAL` em `config.py`
+## Em config.py
+```python
+DATA_INICIAL = f'dadosConsulta.dtInicio={data_atual}&dadosConsulta.dtFim={data_atual}&dadosConsulta.cdCaderno=12&dadosConsulta.pesquisaLivre=%22RPV%22+e+%22pagamento+pelo+INSS%22&pagina='
+```
+## Depois builde novamente o python_scraper
 ```bash
 docker build -t python_scraper .
 ```
 
 #### Build e Deploy
 A configuração do frontend está integrada ao Docker Compose e será disponibilizada automaticamente ao subir o projeto.
+- o Front End em React estará rodando em: http://localhost:5173
+- o Back End em Express estará rodando em: http://localhost:3000
+- O Bando de Dados em Postgres estará rodando em http://localhost:5432
 
 ## Estrutura do Banco de Dados
 
